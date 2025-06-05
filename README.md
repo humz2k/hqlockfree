@@ -1,2 +1,4 @@
-# mpsc_queue
+# hqlockfree
+
+Various C++ lock free data structures.
 
