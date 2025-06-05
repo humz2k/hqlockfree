@@ -73,8 +73,7 @@ class write_confirm {
         uint64_t expected = written_index;
         const uint64_t desired = written_index + 1;
         while (!m_read_head.compare_exchange_weak(expected, desired,
-                                                  std::memory_order_release,
-                                                  std::memory_order_relaxed)) {
+                                                  std::memory_order_release)) {
             if (expected >= desired)
                 break;                // this shouldn't happen...
             expected = written_index; // reset expected on failure

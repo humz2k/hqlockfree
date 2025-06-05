@@ -11,6 +11,8 @@
 #include <queue>
 #include <thread>
 
+static constexpr size_t queue_size = 1024 << 4;
+
 enum class queue_type { spsc, mpsc, fanout, boost_spsc, boost_mpsc, mutex };
 
 template <typename T, queue_type type> struct queue_wrapper {};
@@ -85,7 +87,7 @@ template <typename T> struct queue_wrapper<T, queue_type::mutex> {
 
 template <queue_type type>
 static void callsite_push_latency_single_producer(benchmark::State& st) {
-    queue_wrapper<size_t, type> q(1024);
+    queue_wrapper<size_t, type> q(queue_size);
     std::atomic<bool> should_run = true;
     std::atomic_flag started = false;
 
@@ -123,8 +125,8 @@ static void callsite_push_latency_single_producer(benchmark::State& st) {
 
 template <queue_type type>
 static void roundtrip_single_producer(benchmark::State& st) {
-    queue_wrapper<size_t, type> q1(1024);
-    queue_wrapper<size_t, type> q2(1024);
+    queue_wrapper<size_t, type> q1(queue_size);
+    queue_wrapper<size_t, type> q2(queue_size);
     std::atomic<bool> should_run = true;
     std::atomic_flag started = false;
 
@@ -163,7 +165,7 @@ static void roundtrip_single_producer(benchmark::State& st) {
 
 template <queue_type type>
 static void roundtrip_single_thread(benchmark::State& st) {
-    queue_wrapper<size_t, type> q1(1024);
+    queue_wrapper<size_t, type> q1(queue_size);
 
     size_t iteration = 0;
     for (auto _ : st) {
