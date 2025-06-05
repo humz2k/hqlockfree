@@ -21,7 +21,7 @@
 namespace hqlockfree {
 
 /** @brief Conventional x86‑64 cache line size in bytes. */
-static constexpr size_t cache_line_size = 64UL;
+static inline constexpr size_t cache_line_size = 64UL;
 
 /**
  * @brief Helper that pads an object to occupy an entire cache line, preventing
