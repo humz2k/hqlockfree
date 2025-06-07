@@ -5,3 +5,4 @@ clang-format -i include/hqlockfree/*.hpp
 clang-format -i src/hqlockfree/*.cpp
 clang-format -i tests/*.cpp
 clang-format -i perf/*.cpp
+clang-format -i examples/*.cpp

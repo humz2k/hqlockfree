@@ -18,8 +18,12 @@ target_include_directories(hqlockfree PUBLIC include)
 
 if (${PROJECT_IS_TOP_LEVEL})
 
-add_executable( example example.cpp )
-target_link_libraries( example hqlockfree )
+file( GLOB EXAMPLE_SOURCES examples/*.cpp )
+foreach( sourcefile ${EXAMPLE_SOURCES} )
+    get_filename_component( name ${sourcefile} NAME_WE )
+    add_executable( ${name} ${sourcefile} )
+    target_link_libraries( ${name} hqlockfree )
+endforeach( sourcefile ${EXAMPLE_SOURCES} )
 
 FetchContent_Declare(
     googletest
