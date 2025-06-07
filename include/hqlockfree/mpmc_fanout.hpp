@@ -104,11 +104,8 @@ class mpmc_fanout {
     const size_t m_free_capacity_needed; ///< == capacity‑1
 
     /* subscriptions ----------------------------------------------------*/
-    std::unordered_map<size_t, std::unique_ptr<subscription_handle>>
-        m_subscriptions;
+    std::vector<std::unique_ptr<subscription_handle>> m_subscriptions;
     std::mutex m_subscription_mutex;
-    std::vector<size_t> m_to_delete;
-    size_t m_next_key = 0;
 
     /* daemon callback --------------------------------------------------*/
     callback_key_t m_callback_key;
@@ -117,19 +114,17 @@ class mpmc_fanout {
      */
     void update_min_tail() {
         std::lock_guard<std::mutex> lock(m_subscription_mutex);
-        m_to_delete.clear();
         uint64_t min_tail = m_write_confirmer.get_read_index();
-        for (auto& [key, handle] : m_subscriptions) {
+        for (auto it = m_subscriptions.begin(); it != m_subscriptions.end();) {
+            auto& handle = *it;
             if (handle->subscribed()) {
                 min_tail = std::min(min_tail, handle->get_tail());
+                ++it;
             } else {
-                m_to_delete.push_back(key);
+                it = m_subscriptions.erase(it);
             }
         }
         m_min_tail.store(min_tail, std::memory_order_release);
-        for (auto to_delete : m_to_delete) {
-            m_subscriptions.erase(to_delete);
-        }
     }
 
     /* Internal helpers --------------------------------------------------*/
@@ -180,11 +175,10 @@ class mpmc_fanout {
      */
     [[nodiscard]] subscription_handle* subscribe() {
         std::lock_guard<std::mutex> lock(m_subscription_mutex);
-        auto new_sub =
-            std::make_unique<subscription_handle>(m_buffer, m_write_confirmer);
-        auto this_key = m_next_key++;
-        m_subscriptions[this_key] = std::move(new_sub);
-        return m_subscriptions[this_key].get();
+        return m_subscriptions
+            .emplace_back(std::make_unique<subscription_handle>(
+                m_buffer, m_write_confirmer))
+            .get();
     }
 
     /* ------------------------------------------------------------------
