@@ -66,7 +66,9 @@ class mpmc_fanout {
               m_tail(m_write_confirmer.get_read_index()) {}
 
         /** @brief Current read cursor. */
-        uint64_t get_tail() const { return m_tail; }
+        uint64_t get_tail() const {
+            return m_tail.load(std::memory_order_relaxed);
+        }
 
         /** @brief Is this subscriber active. */
         bool subscribed() const { return m_subscribed; }
