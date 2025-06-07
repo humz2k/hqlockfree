@@ -68,3 +68,9 @@ hqlockfree is **header-only** and cmake-ified.
 ```bash
 g++ -std=c++20 -O3 -march=native -I/path/to/hqlockfree/include ...
 ```
+
+---
+
+## 3. Contributing
+
+See https://www.conventionalcommits.org/en/v1.0.0/ for commit messages.
