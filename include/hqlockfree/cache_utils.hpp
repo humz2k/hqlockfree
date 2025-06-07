@@ -210,8 +210,7 @@ class alignas(cache_line_size) false_sharing_optimized_buffer {
           m_mod_index(m_lines.size()), m_div_index(m_lines.size()),
           m_mod_index2(size()) {}
 
-    /* Random access
-     * -----------------------------------------------------------*/
+    /* Random access */
     T& get(const size_t& idx) {
         return m_lines[m_mod_index(idx)][m_div_index(m_mod_index2(idx))];
     }
@@ -221,8 +220,7 @@ class alignas(cache_line_size) false_sharing_optimized_buffer {
     T& operator[](const size_t& idx) { return get(idx); }
     const T& operator[](const size_t& idx) const { return get(idx); }
 
-    /* Introspection
-     * -----------------------------------------------------------*/
+    /* Introspection */
     size_t number_of_cache_lines() const { return m_lines.size(); }
     size_t size() const { return number_of_cache_lines() * cache_line_size; }
 };
