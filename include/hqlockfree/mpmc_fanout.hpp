@@ -25,7 +25,6 @@
 #include "write_confirm.hpp" // write reservation / commit helper
 
 #include <atomic>
-#include <iostream>
 #include <memory>
 #include <mutex>
 #include <vector>
