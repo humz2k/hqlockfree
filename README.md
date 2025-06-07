@@ -1,6 +1,6 @@
 # hqlockfree
 
-**hqlockfree** is a header-only collection of low-latency, lock-free data-structures for C++20.
+**hqlockfree** is a collection of low-latency, lock-free data-structures for C++20.
 
 | Container       | Pattern                 | Highlights                                          |
 | --------------- | ----------------------- | --------------------------------------------------- |
@@ -63,11 +63,7 @@ for (const auto& o : view) print(o);
 
 ## 2. Building & testing
 
-hqlockfree is **header-only** and cmake-ified.
-
-```bash
-g++ -std=c++20 -O3 -march=native -I/path/to/hqlockfree/include ...
-```
+hqlockfree is cmake-ified.
 
 ---
 
