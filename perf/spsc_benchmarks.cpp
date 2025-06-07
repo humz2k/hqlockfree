@@ -73,7 +73,7 @@ template <typename T> struct queue_wrapper<T, queue_type::mutex> {
     }
     void push(T&& value) {
         std::lock_guard<std::mutex> lock(mutex);
-        queue.push(std::forward<T>(value));
+        queue.push(std::move(value));
     }
     bool pop(T& value) {
         std::lock_guard<std::mutex> lock(mutex);

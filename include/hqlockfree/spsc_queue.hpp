@@ -106,7 +106,7 @@ class spsc_queue {
     }
     void push(T&& value) {
         uint64_t index = get_free_index();
-        m_buffer[index] = std::forward<T>(value);
+        m_buffer[index] = std::move(value);
         update_read_head(index);
     }
 
