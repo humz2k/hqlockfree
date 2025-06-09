@@ -1,6 +1,6 @@
 # hqlockfree
 
-**hqlockfree** is a collection of low-latency, lock-free data-structures for C++20.
+**hqlockfree** is a collection of low-latency, lock-free (ish) data-structures for C++20.
 
 | Container       | Pattern                 | Highlights                                          |
 | --------------- | ----------------------- | --------------------------------------------------- |
