@@ -81,6 +81,8 @@ class mpmc_fanout {
          * @return `true` on success, `false` if no new data.
          */
         bool pop(T& value) {
+            if (!subscribed())
+                return false;
             const uint64_t read_head = m_write_confirmer.get_read_index();
             const uint64_t tail = m_tail.load(std::memory_order_relaxed);
             if (read_head <= tail)
@@ -104,7 +106,7 @@ class mpmc_fanout {
     const size_t m_free_capacity_needed; ///< == capacity‑1
 
     /* subscriptions ----------------------------------------------------*/
-    std::vector<std::unique_ptr<subscription_handle>> m_subscriptions;
+    std::vector<std::shared_ptr<subscription_handle>> m_subscriptions;
     std::mutex m_subscription_mutex;
 
     /* daemon callback --------------------------------------------------*/
@@ -117,7 +119,7 @@ class mpmc_fanout {
         uint64_t min_tail = m_write_confirmer.get_read_index();
         for (auto it = m_subscriptions.begin(); it != m_subscriptions.end();) {
             auto& handle = *it;
-            if (handle->subscribed()) {
+            if (handle->subscribed() && (handle.use_count() > 1)) {
                 min_tail = std::min(min_tail, handle->get_tail());
                 ++it;
             } else {
@@ -167,18 +169,11 @@ class mpmc_fanout {
     /* ------------------------------------------------------------------
      *  Consumer API
      * ----------------------------------------------------------------*/
-    /**
-     * @brief Create and return a new independent subscription.
-     *
-     * The caller owns the returned pointer; destroying the `unique_ptr`
-     * removes it from the fan‑out set automatically.
-     */
-    [[nodiscard]] subscription_handle* subscribe() {
+    /** @brief Create and return a new independent subscription. */
+    [[nodiscard]] std::shared_ptr<subscription_handle> subscribe() {
         std::lock_guard<std::mutex> lock(m_subscription_mutex);
-        return m_subscriptions
-            .emplace_back(std::make_unique<subscription_handle>(
-                m_buffer, m_write_confirmer))
-            .get();
+        return m_subscriptions.emplace_back(
+            std::make_shared<subscription_handle>(m_buffer, m_write_confirmer));
     }
 
     /* ------------------------------------------------------------------

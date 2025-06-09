@@ -7,6 +7,7 @@
 #include <hqlockfree/spsc_queue.hpp>
 
 #include <atomic>
+#include <memory>
 #include <mutex>
 #include <queue>
 #include <thread>
@@ -32,7 +33,8 @@ struct queue_wrapper<T, queue_type::mpsc> : public hqlockfree::mpsc_queue<T> {
 template <typename T>
 struct queue_wrapper<T, queue_type::fanout>
     : public hqlockfree::mpmc_fanout<T> {
-    hqlockfree::mpmc_fanout<T>::subscription_handle* sub;
+    std::shared_ptr<typename hqlockfree::mpmc_fanout<T>::subscription_handle>
+        sub;
     explicit queue_wrapper(size_t n_elements)
         : hqlockfree::mpmc_fanout<T>(0, n_elements), sub(this->subscribe()) {}
 

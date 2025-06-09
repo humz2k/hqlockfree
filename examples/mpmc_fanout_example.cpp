@@ -15,7 +15,7 @@ static std::mutex print_mutex;
 struct my_subscriber {
     static inline std::atomic<size_t> g_id;
     size_t id = g_id.fetch_add(1, std::memory_order_relaxed);
-    mpmc_fanout<int>::subscription_handle* sub;
+    std::shared_ptr<mpmc_fanout<int>::subscription_handle> sub;
     std::atomic<bool> should_run;
     std::thread thread;
 

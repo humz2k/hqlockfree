@@ -13,7 +13,7 @@ using namespace hqlockfree;
 TEST(MPMCFanoutBasic, SingleProducerSingleConsumer) {
     mpmc_fanout<int> q(1 /* lines */, 8 /* elems */);
 
-    auto* sub = q.subscribe();
+    auto sub = q.subscribe();
     q.push(7);
 
     int out = 0;
@@ -33,7 +33,7 @@ TEST(MPMCFanoutBasic, LateSubscription) {
     for (int i = 0; i < 5; ++i)
         q.push(i);
 
-    auto* sub = q.subscribe(); // should start at read_head
+    auto sub = q.subscribe(); // should start at read_head
     int out;
     EXPECT_FALSE(sub->pop(out)); // nothing yet
 
@@ -44,7 +44,7 @@ TEST(MPMCFanoutBasic, LateSubscription) {
 
 TEST(MPMCFanoutCorrectness, WrapAround) {
     mpmc_fanout<int> q(1, 8); // capacity very small
-    auto* sub = q.subscribe();
+    auto sub = q.subscribe();
 
     const std::size_t rounds = q.capacity() * 4;
     for (std::size_t i = 0; i < rounds; ++i) {
@@ -57,7 +57,7 @@ TEST(MPMCFanoutCorrectness, WrapAround) {
 
 TEST(MPMCFanoutCorrectness, ProducerBlocksUntilConsumerAdvances) {
     mpmc_fanout<int> q(1, 4);
-    auto* sub = q.subscribe();
+    auto sub = q.subscribe();
 
     const std::size_t max_fill = q.capacity() - 1;
     for (std::size_t i = 0; i < max_fill; ++i)
@@ -91,8 +91,8 @@ TEST(MPMCFanoutCorrectness, ProducerBlocksUntilConsumerAdvances) {
 TEST(MPMCFanoutCorrectness, UnsubscribeAndCleanup) {
     mpmc_fanout<int> q(2, 16);
 
-    auto* sub1 = q.subscribe();
-    auto* sub2 = q.subscribe();
+    auto sub1 = q.subscribe();
+    auto sub2 = q.subscribe();
 
     // Advance sub1 but not sub2
     for (int i = 0; i < 10; ++i) {
