@@ -92,8 +92,8 @@ class spsc_queue {
     size_t capacity() const { return m_capacity; }
 
     size_t size() const {
-        return m_head.load(std::memory_order_relaxed) -
-               m_tail.load(std::memory_order_relaxed);
+        auto current_tail = m_tail.load(std::memory_order_acquire);
+        return m_head.load(std::memory_order_acquire) - current_tail;
     }
 
     /* ------------------------------------------------------------------

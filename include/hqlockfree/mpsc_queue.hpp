@@ -81,8 +81,8 @@ class mpsc_queue {
     /* Introspection -----------------------------------------------------*/
     /// @return The current number of elements available to the consumer.
     size_t size() const {
-        return m_write_confirm.get_read_index() -
-               m_tail.load(std::memory_order_relaxed);
+        auto current_tail = m_tail.load(std::memory_order_acquire);
+        return m_write_confirm.get_read_index() - current_tail;
     }
     /// @return The ring size.
     size_t capacity() const { return m_capacity; }
